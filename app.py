@@ -4,27 +4,27 @@ import json
 from pathlib import Path
 
 app = typer.Typer()
-tasks_path = Path("tasks.json")
+TODO_FILE = Path("todos.json")
 
-
-def load_todo_list() -> list:
-    if tasks_path.exists():
-        with open(tasks_path, "r", encoding="UTF-8") as f:
-            return json.loads(f)
+def load_todos_list() -> list:
+    if TODO_FILE.exists():
+        with open(TODO_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
     return []
 
+@app.command()
+def add(task: str) -> None:
+    todos_list = load_todos_list()
+    new_task = {"task": task, "done": False}
+    todos_list.append(new_task)
+    with open(TODO_FILE, "w", encoding="utf-8") as f:
+        json.dump(todos_list, f, ensure_ascii=False, indent=4)
 
 @app.command()
-def greetings(name: str, iq: int, show_iq: bool = False) -> None:
-    print(f"Hello, {name}!")
-    if show_iq:
-        print(f"Your IQ is {iq}")
-
-
-@app.command()
-def goodbye() -> None:
-    print("See you :)")
-
+def show() -> None:
+    todo_list = load_todos_list()
+    for i in range(len(todo_list)):
+        print(f"{i + 1}) {todo_list[i]}")
 
 if __name__ == "__main__":
     app()
